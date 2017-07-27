@@ -183,5 +183,53 @@ namespace Cake.Git
                 repository =>new GitCommit(repository.Lookup<Commit>(commitId))
                 );
         }
+
+        /// <summary>
+        /// Get commit log.
+        /// </summary>
+        /// <example>
+        /// <code>
+        ///     var result =  GitLog("c:/temp/cake", new CommitFilter {
+        ///         IncludeReachableFrom = startSha,
+        ///         ExcludeReachableFrom = toSha
+        ///     });
+        /// </code>
+        /// </example>
+        /// <param name="context">The context.</param>
+        /// <param name="repositoryDirectoryPath">Path to repository.</param>
+        /// <param name="filter">A filter to apply.</param>
+        /// <returns>The path to the created repository.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        [CakeMethodAlias]
+        [CakeAliasCategory("Log")]
+        public static ICollection<GitCommit> GitLog(
+            this ICakeContext context,
+            DirectoryPath repositoryDirectoryPath,
+            CommitFilter filter 
+            )
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (repositoryDirectoryPath == null)
+            {
+                throw new ArgumentNullException(nameof(repositoryDirectoryPath));
+            }
+
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
+            return context.UseRepository(
+                repositoryDirectoryPath,
+                repository => repository.Commits
+                    .QueryBy(filter)
+                    .Select(commit => new GitCommit(commit))
+                    .ToList()
+            );
+        }
     }
 }
