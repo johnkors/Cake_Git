@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using LibGit2Sharp;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -41,6 +43,11 @@ namespace Cake.Git
         public string MessageShort { get; }
 
         /// <summary>
+        /// The parents of the commit message.
+        /// </summary>
+        public IEnumerable<GitCommit> Parents { get; set; }
+
+        /// <summary>
         /// Generates a string representation of <see cref="GitCommit"/>
         /// </summary>
         /// <returns><see cref="GitCommit"/> as string</returns>
@@ -61,6 +68,7 @@ namespace Cake.Git
             Committer = new GitSignature(commit.Committer.Email, commit.Committer.Name, commit.Committer.When);
             Message = commit.Message;
             MessageShort = commit.MessageShort;
+            Parents = commit.Parents.Any() ? commit.Parents.Select(p => new GitCommit(p)).ToList() : new List<GitCommit>();
         }
     }
 }
